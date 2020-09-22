@@ -11,7 +11,8 @@ from keras import models
 from keras.optimizers import Adam, RMSprop
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
-
+import math,time
+import seaborn as sns
 #Training and test sets
 training_set=pd.read_csv('train.csv/train.csv')
 test_set=pd.read_csv('test.csv/test.csv')
@@ -38,6 +39,8 @@ val_y=ts.reshape(ts.shape[0],1)
 train_x=train_x/255
 val_x=val_x/255
 test_set=test_set/255
+
+
 
 """
 np.random.seed(1)
@@ -79,6 +82,7 @@ fig=plt.figure(figsize=(cols,rows))
 plt.imshow(train_x[444].reshape([28,28]))
 
 """
+#CNN
 # Block 1
 model=models.Sequential()
 model.add(Conv2D(32,3, padding  ="same",input_shape=(28,28,1)))
@@ -108,6 +112,29 @@ model.compile(Adam(lr=initial_lr), loss=loss ,metrics=['accuracy'])
 epochs = 10
 batch_size = 256
 history_1 = model.fit(train_x,train_y,batch_size=batch_size,epochs=epochs,validation_data=[val_x,val_y])
+
+#SVM
+
+#KernelSVM
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
+
+linear_svm=SVC(kernel='linear')
+train_data=training_set
+y=train_data['label']
+X=train_data.drop(columns='label')
+X=X/255.0
+test_set=test_set/255
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import scale
+X_scaled =scale(X)
+X_train,X_test,y_train,y_test = train_test_split(X_scaled,y,test_size=0.3,train_size=0.2,random_state=0)
+from sklearn import metrics
+from sklearn.metrics import confusion_matrix
+print(metrics.accuracy_score(test_set,y_pred_lin_svm))
+
+
+
 """
 #vitualizing training performance
 run1=history_1
